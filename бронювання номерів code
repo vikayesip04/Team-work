@@ -1,1 +1,86 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+class Room {
+private:
+    string roomType;
+    bool hasMinibar;
+    bool hasTV;
+    double price;
+    bool isOccupied;
+
+public:
+    Room(string type, bool minibar, bool tv, double roomPrice) {
+        roomType = type;
+        hasMinibar = minibar;
+        hasTV = tv;
+        price = roomPrice;
+        isOccupied = false;
+    }
+
+    void displayRoomDetails() {
+        cout << "Тип кімнати: " << roomType << endl;
+        cout << "Міні-бар: " << (hasMinibar ? "Присутній" : "Відсутній") << endl;
+        cout << "Телевізор: " << (hasTV ? "Присутній" : "Відсутній") << endl;
+        cout << "Ціна за ніч: $" << price << endl;
+        cout << "Статус: " << (isOccupied ? "Зайнято" : "Вільно") << endl;
+        cout << endl;
+    }
+
+    bool bookRoom() {
+        if (isOccupied) {
+            cout << "Кімната вже зайнята." << endl;
+            return false;
+        } else {
+            isOccupied = true;
+            cout << "Кімната успішно заброньована." << endl;
+            return true;
+        }
+    }
+
+    void releaseRoom() {
+        if (isOccupied) {
+            isOccupied = false;
+            cout << "Кімната звільнена." << endl;
+        } else {
+            cout << "Кімната в даний момент не зайнята." << endl;
+        }
+    }
+};
+
+int main() {
+    vector<Room> rooms;
+
+    Room room1("Стандартна", false, true, 50.0);
+    Room room2("Люкс", true, true, 100.0);
+    Room room3("Сімейний номер", true, true, 150.0);
+
+    rooms.push_back(room1);
+    rooms.push_back(room2);
+    rooms.push_back(room3);
+
+    cout << "Доступні кімнати:" << endl;
+    for (int i = 0; i < rooms.size(); i++) {
+        cout << "Кімната " << (i + 1) << ":" << endl;
+        rooms[i].displayRoomDetails();
+    }
+
+    int selectedRoom;
+    cout << "Виберіть номер кімнати для заселення (1-" << rooms.size() << "): ";
+    cin >> selectedRoom;
+
+    if (selectedRoom >= 1 && selectedRoom <= rooms.size()) {
+        Room& selected = rooms[selectedRoom - 1];
+        selected.bookRoom();
+
+        cout << "Обрана кімната для заселення:" << endl;
+        selected.displayRoomDetails();
+    } else {
+        cout << "Недопустимий номер кімнати." << endl;
+    }
+
+    return 0;
+}
 
