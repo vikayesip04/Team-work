@@ -1,62 +1,80 @@
-#include <iostream>
-#include <vector>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-// Клас, що представляє житловий об'єкт
-class Property {
-public:
-    std::string address;
+#define MAX_ADDRESS_LENGTH 100
+
+// Структура, що представляє житловий об'єкт
+struct Property {
+    char address[MAX_ADDRESS_LENGTH];
     int rooms;
     double price;
-
-    Property(const std::string& _address, int _rooms, double _price)
-        : address(_address), rooms(_rooms), price(_price) {}
 };
 
-// Клас, що представляє сервіс оренди житла
-class RentalService {
-private:
-    std::vector<Property> properties;
-
-public:
-    // Додати новий житловий об'єкт
-    void addProperty(const Property& property) {
-        properties.push_back(property);
+// Функція для додавання житлового об'єкту
+void addProperty(struct Property* properties, int* numProperties) {
+    if (*numProperties >= MAX_PROPERTIES) {
+        printf("Досягнуто максимальну кількість житлових об'єктів.\n");
+        return;
     }
 
-    // Пошук житла за адресою та кількістю кімнат
-    std::vector<Property> searchProperty(const std::string& address, int rooms) {
-        std::vector<Property> results;
+    struct Property newProperty;
+    printf("Введіть адресу житлового об'єкту: ");
+    fgets(newProperty.address, MAX_ADDRESS_LENGTH, stdin);
+    newProperty.address[strcspn(newProperty.address, "\n")] = '\0';  // Видалити символ нового рядка
+    printf("Введіть кількість кімнат: ");
+    scanf("%d", &newProperty.rooms);
+    printf("Введіть ціну оренди: ");
+    scanf("%lf", &newProperty.price);
+    getchar();  // Видалити символ нового рядка з буфера вводу
 
-        for (const auto& property : properties) {
-            if (property.address == address && property.rooms >= rooms) {
-                results.push_back(property);
-            }
-        }
+    properties[*numProperties] = newProperty;
+    (*numProperties)++;
 
-        return results;
+    printf("Житловий об'єкт успішно доданий.\n");
+}
+
+// Функція для виведення житлових об'єктів
+void displayProperties(const struct Property* properties, int numProperties) {
+    printf("Список доступних житлових об'єктів:\n");
+    for (int i = 0; i < numProperties; i++) {
+        printf("Житловий об'єкт %d:\n", i + 1);
+        printf("Адреса: %s\n", properties[i].address);
+        printf("Кількість кімнат: %d\n", properties[i].rooms);
+        printf("Ціна оренди: %.2lf\n", properties[i].price);
+        printf("-------------------------\n");
     }
-};
+}
 
 int main() {
-    RentalService rentalService;
+    struct Property properties[MAX_PROPERTIES];
+    int numProperties = 0;
+    int choice;
 
-    // Додати декілька прикладових житлових об'єктів
-    rentalService.addProperty(Property("Адреса 1", 2, 1000.0));
-    rentalService.addProperty(Property("Адреса 2", 3, 1500.0));
-    rentalService.addProperty(Property("Адреса 3", 1, 800.0));
-    rentalService.addProperty(Property("Адреса 4", 4, 2000.0));
+    while (1) {
+        printf("Оберіть опцію:\n");
+        printf("1. Додати житловий об'єкт\n");
+        printf("2. Вивести список доступних житлових об'єктів\n");
+        printf("3. Вийти\n");
+        printf("Ваш вибір: ");
+        scanf("%d", &choice);
+        getchar();  // Видалити символ нового рядка з буфера вводу
 
-    // Пошук житла за адресою та кількістю кімнат
-    std::vector<Property> searchResults = rentalService.searchProperty("Адреса 2", 3);
-
-    // Вивід результатів пошуку
-    if (!searchResults.empty()) {
-        std::cout << "Результати пошуку:\n";
-        for (const auto& property : searchResults) {
-            std::cout << "Адреса: " << property.address << ", Кімнати: " << property.rooms << ", Ціна: " << property.price << "\n";
+        switch (choice) {
+            case 1:
+                addProperty(properties, &numProperties);
+                break;
+            case 2:
+                displayProperties(properties, numProperties);
+                break;
+            case 3:
+                printf("Програма завершена.\n");
+                exit(0);
+            default:
+                printf("Невірний вибір. Спробуйте ще раз.\n");
         }
-    } else {
-        std::cout << "Немає результатів пошуку.\n";
+
+        printf("\n");
     }
 
     return 0;
