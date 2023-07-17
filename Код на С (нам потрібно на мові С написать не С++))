@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Структура, що представляє житловий об'єкт
+typedef struct {
+    char address[100];
+    int rooms;
+    double price;
+} Property;
+
+// Клас, що представляє сервіс оренди житла
+typedef struct {
+    Property properties[100];
+    int count;
+} RentalService;
+
+// Додати новий житловий об'єкт
+void addProperty(RentalService* rentalService, Property property) {
+    rentalService->properties[rentalService->count] = property;
+    rentalService->count++;
+}
+
+// Пошук житла за адресою та кількістю кімнат
+Property* searchProperty(RentalService* rentalService, const char* address, int rooms, int* resultsCount) {
+    Property* results = malloc(rentalService->count * sizeof(Property));
+    *resultsCount = 0;
+
+    for (int i = 0; i < rentalService->count; i++) {
+        Property property = rentalService->properties[i];
+        if (strcmp(property.address, address) == 0 && property.rooms >= rooms) {
+            results[*resultsCount] = property;
+            (*resultsCount)++;
+        }
+    }
+
+    return results;
+}
+
+int main() {
+    RentalService rentalService;
+    rentalService.count = 0;
+
+    // Додати декілька прикладових житлових об'єктів
+    addProperty(&rentalService, (Property){"Адреса 1", 2, 1000.0});
+    addProperty(&rentalService, (Property){"Адреса 2", 3, 1500.0});
+    addProperty(&rentalService, (Property){"Адреса 3", 1, 800.0});
+    addProperty(&rentalService, (Property){"Адреса 4", 4, 2000.0});
+
+    // Пошук житла за адресою та кількістю кімнат
+    int searchResultsCount;
+    Property* searchResults = searchProperty(&rentalService, "Адреса 2", 3, &searchResultsCount);
+
+    // Вивід результатів пошуку
+    if (searchResultsCount > 0) {
+        printf("Результати пошуку:\n");
+        for (int i = 0; i < searchResultsCount; i++) {
+            printf("Адреса: %s, Кімнати: %d, Ціна: %.2f\n", searchResults[i].address, searchResults[i].rooms, searchResults[i].price);
+        }
+        free(searchResults);
+    } else {
+        printf("Немає результатів пошуку.\n");
+    }
+
+    return 0;
+}
