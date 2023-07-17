@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+// Клас, що представляє житловий об'єкт
+class Property {
+public:
+    std::string address;
+    int rooms;
+    double price;
+
+    Property(const std::string& _address, int _rooms, double _price)
+        : address(_address), rooms(_rooms), price(_price) {}
+};
+
+// Клас, що представляє сервіс оренди житла
+class RentalService {
+private:
+    std::vector<Property> properties;
+
+public:
+    // Додати новий житловий об'єкт
+    void addProperty(const Property& property) {
+        properties.push_back(property);
+    }
+
+    // Замовлення житла за адресою
+    bool orderProperty(const std::string& address) {
+        auto it = std::find_if(properties.begin(), properties.end(),
+                               [&](const Property& property) { return property.address == address; });
+
+        if (it != properties.end()) {
+            properties.erase(it);
+            return true;
+        }
+
+        return false;
+    }
+
+    // Вивести список всіх доступних властивостей
+    void printProperties() {
+        std::cout << "Список доступних властивостей:\n";
+        for (const auto& property : properties) {
+            std::cout << "Адреса: " << property.address << ", Кімнати: " << property.rooms << ", Ціна: " << property.price << "\n";
+        }
+    }
+};
+
+int main() {
+    RentalService rentalService;
+
+    // Додати декілька прикладових житлових об'єктів
+    rentalService.addProperty(Property("Адреса 1", 2, 1000.0));
+    rentalService.addProperty(Property("Адреса 2", 3, 1500.0));
+    rentalService.addProperty(Property("Адреса 3", 1, 800.0));
+    rentalService.addProperty(Property("Адреса 4", 4, 2000.0));
+
+    // Вивести список доступних властивостей
+    rentalService.printProperties();
+
+    // Замовлення житла за адресою
+    std::string orderAddress = "Адреса 2";
+    bool orderResult = rentalService.orderProperty(orderAddress);
+
+    if (orderResult) {
+        std::cout << "Замовлення житла за адресою " << orderAddress << " успішно виконане.\n";
+    } else {
+        std::cout << "Не вдалося замовити житло за адресою " << orderAddress << ".\n";
+    }
+
+    // Вивести оновлений список доступних властивостей
+    rentalService.printProperties();
+
+    return 0;
+}
