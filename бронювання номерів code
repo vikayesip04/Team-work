@@ -1,86 +1,93 @@
-#include <iostream>
-#include <string>
-#include <vector>
-using namespace std;
+#include <stdio.h>
+#include <string.h>
 
-class Room {
-private:
-    string roomType;
-    bool hasMinibar;
-    bool hasTV;
+#define MAX_PROPERTIES 100
+
+// Структура, що представляє житловий об'єкт
+typedef struct {
+    char address[100];
+    int rooms;
     double price;
-    bool isOccupied;
+} Property;
 
-public:
-    Room(string type, bool minibar, bool tv, double roomPrice) {
-        roomType = type;
-        hasMinibar = minibar;
-        hasTV = tv;
-        price = roomPrice;
-        isOccupied = false;
+// Функція для додавання нового житлового об'єкту
+void addProperty(Property properties[], int* count) {
+    if (*count == MAX_PROPERTIES) {
+        printf("Максимальна кількість властивостей досягнута.\n");
+        return;
     }
 
-    void displayRoomDetails() {
-        cout << "Тип кімнати: " << roomType << endl;
-        cout << "Міні-бар: " << (hasMinibar ? "Присутній" : "Відсутній") << endl;
-        cout << "Телевізор: " << (hasTV ? "Присутній" : "Відсутній") << endl;
-        cout << "Ціна за ніч: $" << price << endl;
-        cout << "Статус: " << (isOccupied ? "Зайнято" : "Вільно") << endl;
-        cout << endl;
-    }
+    Property newProperty;
+    printf("Введіть адресу: ");
+    fgets(newProperty.address, sizeof(newProperty.address), stdin);
+    newProperty.address[strcspn(newProperty.address, "\n")] = '\0';  // Видалення символу нового рядка
+    printf("Введіть кількість кімнат: ");
+    scanf("%d", &newProperty.rooms);
+    printf("Введіть ціну: ");
+    scanf("%lf", &newProperty.price);
+    getchar();  // Очищення буфера введення
 
-    bool bookRoom() {
-        if (isOccupied) {
-            cout << "Кімната вже зайнята." << endl;
-            return false;
-        } else {
-            isOccupied = true;
-            cout << "Кімната успішно заброньована." << endl;
-            return true;
+    properties[*count] = newProperty;
+    (*count)++;
+}
+
+// Функція для пошуку житла за адресою та кількістю кімнат
+void searchProperty(const Property properties[], int count, const char* address, int rooms) {
+    int found = 0;
+
+    printf("Результати пошуку:\n");
+    for (int i = 0; i < count; i++) {
+        if (strcmp(properties[i].address, address) == 0 && properties[i].rooms >= rooms) {
+            printf("Адреса: %s, Кімнати: %d, Ціна: %.2f\n", properties[i].address, properties[i].rooms, properties[i].price);
+            found = 1;
         }
     }
 
-    void releaseRoom() {
-        if (isOccupied) {
-            isOccupied = false;
-            cout << "Кімната звільнена." << endl;
-        } else {
-            cout << "Кімната в даний момент не зайнята." << endl;
-        }
+    if (!found) {
+        printf("Немає результатів пошуку.\n");
     }
-};
+}
 
 int main() {
-    vector<Room> rooms;
+    Property properties[MAX_PROPERTIES];
+    int count = 0;
 
-    Room room1("Стандартна", false, true, 50.0);
-    Room room2("Люкс", true, true, 100.0);
-    Room room3("Сімейний номер", true, true, 150.0);
+    char choice;
+    do {
+        printf("1. Додати житловий об'єкт\n");
+        printf("2. Пошук житла за адресою та кількістю кімнат\n");
+        printf("3. Вихід\n");
+        printf("Ваш вибір: ");
+        scanf(" %c", &choice);
+        getchar();  // Очищення буфера введення
 
-    rooms.push_back(room1);
-    rooms.push_back(room2);
-    rooms.push_back(room3);
+        switch (choice) {
+            case '1':
+                addProperty(properties, &count);
+                break;
+            case '2':
+                {
+                    char address[100];
+                    int rooms;
+                    printf("Введіть адресу для пошуку: ");
+                    fgets(address, sizeof(address), stdin);
+                    address[strcspn(address, "\n")] = '\0';  // Видалення символу нового рядка
+                    printf("Введіть мінімальну кількість кімнат: ");
+                    scanf("%d", &rooms);
+                    getchar();  // Очищення буфера введення
 
-    cout << "Доступні кімнати:" << endl;
-    for (int i = 0; i < rooms.size(); i++) {
-        cout << "Кімната " << (i + 1) << ":" << endl;
-        rooms[i].displayRoomDetails();
-    }
+                    searchProperty(properties, count, address, rooms);
+                }
+                break;
+            case '3':
+                printf("До побачення!\n");
+                break;
+            default:
+                printf("Неправильний вибір. Спробуйте ще раз.\n");
+        }
 
-    int selectedRoom;
-    cout << "Виберіть номер кімнати для заселення (1-" << rooms.size() << "): ";
-    cin >> selectedRoom;
-
-    if (selectedRoom >= 1 && selectedRoom <= rooms.size()) {
-        Room& selected = rooms[selectedRoom - 1];
-        selected.bookRoom();
-
-        cout << "Обрана кімната для заселення:" << endl;
-        selected.displayRoomDetails();
-    } else {
-        cout << "Недопустимий номер кімнати." << endl;
-    }
+        printf("\n");
+    } while (choice != '3');
 
     return 0;
 }
-
