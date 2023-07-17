@@ -1,57 +1,160 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
-// Структура, що представляє кімнату
 typedef struct {
-    int roomNumber;
-    bool isReserved;
+    char roomType[50];
+    int capacity;
+    int numBeds;
+    bool hasMinibar;
+    bool hasTV;
+    bool hasWiFiRouter;
+    bool hasRoomCleaning;
+    bool hasExtraFood;
+    bool hasFreeMovies;
+    double basePrice;
+    bool isOccupied;
 } Room;
 
-// Функція для бронювання номера
-void reserveRoom(Room* rooms, int roomCount, int roomNumber) {
-    for (int i = 0; i < roomCount; i++) {
-        if (rooms[i].roomNumber == roomNumber) {
-            if (rooms[i].isReserved) {
-                printf("Номер %d вже заброньований.\n", roomNumber);
-            } else {
-                rooms[i].isReserved = true;
-                printf("Номер %d успішно заброньований.\n", roomNumber);
-            }
-            return;
-        }
-    }
-
-    printf("Номер %d не знайдений.\n", roomNumber);
+void displayRoomDetails(Room room) {
+    printf("Тип кімнати: %s\n", room.roomType);
+    printf("Кількість місць: %d\n", room.capacity);
+    printf("Кількість ліжок: %d\n", room.numBeds);
+    printf("Міні-бар: %s\n", (room.hasMinibar ? "Присутній" : "Відсутній"));
+    printf("Телевізор: %s\n", (room.hasTV ? "Присутній" : "Відсутній"));
+    printf("WiFi-роутер: %s\n", (room.hasWiFiRouter ? "Присутній" : "Відсутній"));
+    printf("Прибирання у кімнаті: %s\n", (room.hasRoomCleaning ? "Присутнє" : "Відсутнє"));
+    printf("Додаткова їжа: %s\n", (room.hasExtraFood ? "Присутня" : "Відсутня"));
+    printf("Безкоштовні фільми: %s\n", (room.hasFreeMovies ? "Присутні" : "Відсутні"));
+    printf("Ціна за ніч: $%.2f\n", room.basePrice);
+    printf("Статус: %s\n", (room.isOccupied ? "Зайнято" : "Вільно"));
+    printf("\n");
 }
 
-// Функція для виводу інформації про заброньовані номери
-void printReservedRooms(const Room* rooms, int roomCount) {
-    printf("Заброньовані номери:\n");
-    for (int i = 0; i < roomCount; i++) {
-        if (rooms[i].isReserved) {
-            printf("Номер: %d\n", rooms[i].roomNumber);
-        }
+double calculateRoomPrice(Room room) {
+    double price = room.basePrice;
+
+    // Додаткові витрати за наявність різних послуг
+    if (room.hasFreeMovies) {
+        price += 20.0;
+    }
+    if (room.hasExtraFood) {
+        price += 30.0;
+    }
+    if (room.hasWiFiRouter) {
+        price += 10.0;
+    }
+
+    return price;
+}
+
+bool bookRoom(Room *room) {
+    if (room->isOccupied) {
+        printf("Кімната вже зайнята.\n");
+        return false;
+    } else {
+        room->isOccupied = true;
+        printf("Кімната успішно заброньована.\n");
+        return true;
+    }
+}
+
+void releaseRoom(Room *room) {
+    if (room->isOccupied) {
+        room->isOccupied = false;
+        printf("Кімната звільнена.\n");
+    } else {
+        printf("Кімната в даний момент не зайнята.\n");
     }
 }
 
 int main() {
-    const int roomCount = 10;
-    Room rooms[roomCount];
+    Room rooms[5];
 
-    // Ініціалізація кімнат
-    for (int i = 0; i < roomCount; i++) {
-        rooms[i].roomNumber = i + 1;
-        rooms[i].isReserved = false;
+    // Одномісна кімната
+    strncpy(rooms[0].roomType, "Одномісна кімната", sizeof(rooms[0].roomType));
+    rooms[0].capacity = 1;
+    rooms[0].numBeds = 1;
+    rooms[0].hasMinibar = false;
+    rooms[0].hasTV = true;
+    rooms[0].hasWiFiRouter = true;
+    rooms[0].hasRoomCleaning = true;
+    rooms[0].hasExtraFood = false;
+    rooms[0].hasFreeMovies = false;
+    rooms[0].basePrice = 50.0;
+    rooms[0].isOccupied = false;
+
+    // Двомісна кімната
+    strncpy(rooms[1].roomType, "Двомісна кімната", sizeof(rooms[1].roomType));
+    rooms[1].capacity = 2;
+    rooms[1].numBeds = 1;
+    rooms[1].hasMinibar = true;
+    rooms[1].hasTV = true;
+    rooms[1].hasWiFiRouter = false;
+    rooms[1].hasRoomCleaning = true;
+    rooms[1].hasExtraFood = true;
+    rooms[1].hasFreeMovies = false;
+    rooms[1].basePrice = 100.0;
+    rooms[1].isOccupied = false;
+
+    // Кімната з двома ліжками
+    strncpy(rooms[2].roomType, "Кімната з двома ліжками", sizeof(rooms[2].roomType));
+    rooms[2].capacity = 2;
+    rooms[2].numBeds = 2;
+    rooms[2].hasMinibar = true;
+    rooms[2].hasTV = true;
+    rooms[2].hasWiFiRouter = true;
+    rooms[2].hasRoomCleaning = true;
+    rooms[2].hasExtraFood = true;
+    rooms[2].hasFreeMovies = true;
+    rooms[2].basePrice = 150.0;
+    rooms[2].isOccupied = false;
+
+    // Люкс
+    strncpy(rooms[3].roomType, "Люкс", sizeof(rooms[3].roomType));
+    rooms[3].capacity = 2;
+    rooms[3].numBeds = 1;
+    rooms[3].hasMinibar = true;
+    rooms[3].hasTV = true;
+    rooms[3].hasWiFiRouter = true;
+    rooms[3].hasRoomCleaning = true;
+    rooms[3].hasExtraFood = true;
+    rooms[3].hasFreeMovies = true;
+    rooms[3].basePrice = 200.0;
+    rooms[3].isOccupied = false;
+
+    // Делюкс
+    strncpy(rooms[4].roomType, "Делюкс", sizeof(rooms[4].roomType));
+    rooms[4].capacity = 3;
+    rooms[4].numBeds = 2;
+    rooms[4].hasMinibar = true;
+    rooms[4].hasTV = true;
+    rooms[4].hasWiFiRouter = true;
+    rooms[4].hasRoomCleaning = true;
+    rooms[4].hasExtraFood = true;
+    rooms[4].hasFreeMovies = true;
+    rooms[4].basePrice = 300.0;
+    rooms[4].isOccupied = false;
+
+    printf("Доступні кімнати:\n");
+    for (int i = 0; i < 5; i++) {
+        printf("Кімната %d:\n", (i + 1));
+        displayRoomDetails(rooms[i]);
     }
 
-    // Бронювання номерів
-    reserveRoom(rooms, roomCount, 2);
-    reserveRoom(rooms, roomCount, 5);
-    reserveRoom(rooms, roomCount, 8);
-    reserveRoom(rooms, roomCount, 2);  // повторне бронювання
+    int selectedRoom;
+    printf("Виберіть номер кімнати для заселення (1-5): ");
+    scanf("%d", &selectedRoom);
 
-    // Виведення заброньованих номерів
-    printReservedRooms(rooms, roomCount);
+    if (selectedRoom >= 1 && selectedRoom <= 5) {
+        Room *selected = &rooms[selectedRoom - 1];
+        bookRoom(selected);
+
+        printf("Обрана кімната для заселення:\n");
+        displayRoomDetails(*selected);
+    } else {
+        printf("Недопустимий номер кімнати.\n");
+    }
 
     return 0;
 }
