@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_ADDRESS_LENGTH 100
+
+// Структура, що представляє житловий об'єкт
+struct Property {
+    char address[MAX_ADDRESS_LENGTH];
+    int rooms;
+    double price;
+};
+
+// Структура, що представляє послугу оренди житла
+struct RentalService {
+    struct Property properties[MAX_PROPERTIES];
+    int numProperties;
+    char groupName[50];
+};
+
+// Функція для додавання житлового об'єкту до послуги
+void addProperty(struct RentalService* service) {
+    if (service->numProperties >= MAX_PROPERTIES) {
+        printf("Досягнуто максимальну кількість житлових об'єктів.\n");
+        return;
+    }
+
+    struct Property newProperty;
+    printf("Введіть адресу житлового об'єкту: ");
+    fgets(newProperty.address, MAX_ADDRESS_LENGTH, stdin);
+    newProperty.address[strcspn(newProperty.address, "\n")] = '\0';  // Видалити символ нового рядка
+    printf("Введіть кількість кімнат: ");
+    scanf("%d", &newProperty.rooms);
+    printf("Введіть ціну оренди: ");
+    scanf("%lf", &newProperty.price);
+    getchar();  // Видалити символ нового рядка з буфера вводу
+
+    service->properties[service->numProperties] = newProperty;
+    (service->numProperties)++;
+
+    printf("Житловий об'єкт успішно доданий.\n");
+}
+
+// Функція для виведення житлових об'єктів послуги
+void displayProperties(const struct RentalService* service) {
+    printf("Список доступних житлових об'єктів для групи \"%s\":\n", service->groupName);
+    for (int i = 0; i < service->numProperties; i++) {
+        printf("Житловий об'єкт %d:\n", i + 1);
+        printf("Адреса: %s\n", service->properties[i].address);
+        printf("Кількість кімнат: %d\n", service->properties[i].rooms);
+        printf("Ціна оренди: %.2lf\n", service->properties[i].price);
+        printf("-------------------------\n");
+    }
+}
+
+int main() {
+    struct RentalService service;
+    service.numProperties = 0;
+
+    printf("Введіть назву групи послуги: ");
+    fgets(service.groupName, 50, stdin);
+    service.groupName[strcspn(service.groupName, "\n")] = '\0';  // Видалити символ нового рядка
+
+    int choice;
+
+    while (1) {
+        printf("Оберіть опцію:\n");
+        printf("1. Додати житловий об'єкт\n");
+        printf("2. Вивести список доступних житлових об'єктів\n");
+        printf("3. Вийти\n");
+        printf("Ваш вибір: ");
+        scanf("%d", &choice);
+        getchar();  // Видалити символ нового рядка з буфера вводу
+
+        switch (choice) {
+            case 1:
+                addProperty(&service);
+                break;
+            case 2:
+                displayProperties(&service);
+                break;
+            case 3:
+                printf("Програма завершена.\n");
+                exit(0);
+            default:
+                printf("Невірний вибір. Спробуйте ще раз.\n");
+        }
+
+        printf("\n");
+    }
+
+    return 0;
+}
