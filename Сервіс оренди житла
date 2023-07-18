@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Структура, що представляє житловий об'єкт
+typedef struct {
+    char address[100];
+    int rooms;
+    double price;
+} Property;
+
+// Структура, що представляє замовлення
+typedef struct {
+    Property property;
+    char customerName[100];
+    int rating;
+} Order;
+
+// Структура, що представляє акаунт користувача
+typedef struct {
+    char username[100];
+    Order orders[100];
+    int orderCount;
+} Account;
+
+// Функція для створення акаунта
+Account createAccount(const char* username) {
+    Account account;
+    strcpy(account.username, username);
+    account.orderCount = 0;
+    return account;
+}
+
+// Функція для замовлення житлового об'єкта
+void placeOrder(Account* account, const Property* property, const char* customerName) {
+    Order order;
+    order.property = *property;
+    strcpy(order.customerName, customerName);
+    order.rating = -1;
+
+    account->orders[account->orderCount] = order;
+    account->orderCount++;
+
+    printf("Ви замовили житловий об'єкт з такими характеристиками:\n");
+    printf("Адреса: %s\n", property->address);
+    printf("Кімнати: %d\n", property->rooms);
+    printf("Ціна: %.2f\n", property->price);
+    printf("Замовлення від: %s\n", customerName);
+    printf("Дякуємо за ваше замовлення!\n");
+}
+
+// Функція для оцінювання послуги
+void rateService(Account* account, int orderId, int rating) {
+    if (orderId >= 0 && orderId < account->orderCount) {
+        account->orders[orderId].rating = rating;
+        printf("Ви оцінили послугу для замовлення #%d з рейтингом %d.\n", orderId + 1, rating);
+    } else {
+        printf("Невірний номер замовлення.\n");
+    }
+}
+
+// Функція для виведення історії замовлень
+void printOrderHistory(const Account* account) {
+    printf("Історія замовлень для акаунта %s:\n", account->username);
+    for (int i = 0; i < account->orderCount; i++) {
+        const Order* order = &account->orders[i];
+        printf("Замовлення #%d\n", i + 1);
+        printf("Адреса: %s\n", order->property.address);
+        printf("Кімнати: %d\n", order->property.rooms);
+        printf("Ціна: %.2f\n", order->property.price);
+        printf("Замовлення від: %s\n", order->customerName);
+        if (order->rating != -1) {
+            printf("Рейтинг послуги: %d\n", order->rating);
+        }
+        printf("--------------------------\n");
+    }
+}
+
+int main() {
+    // Створення акаунта
+    Account account = createAccount("user123");
+
+    // Приклад створення житлового об'єкта
+    Property property1;
+    strcpy(property1.address, "Адреса 1");
+    property1.rooms = 2;
+    property1.price = 1000.0;
+
+    // Замовлення житлового об'єкта
+    placeOrder(&account, &property1, "Іванов");
+
+    // Приклад створення ще одного житлового об'єкта
+    Property property2;
+    strcpy(property2.address, "Адреса 2");
+    property2.rooms = 3;
+    property2.price = 1500.0;
+
+    // Замовлення ще одного житлового об'єкта
+    placeOrder(&account, &property2, "Петров");
+
+    // Оцінювання послуги
+    rateService(&account, 1, 5);
+
+    // Виведення історії замовлень
+    printOrderHistory(&account);
+
+    return 0;
+}
