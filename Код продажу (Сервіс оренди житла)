@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Структура, що представляє житловий об'єкт
+typedef struct {
+    char address[100];
+    int rooms;
+    double price;
+} Property;
+
+// Структура, що представляє сервіс продажу житла
+typedef struct {
+    Property* properties;
+    int count;
+} SaleService;
+
+// Ініціалізувати сервіс продажу житла
+void initSaleService(SaleService* saleService) {
+    saleService->properties = NULL;
+    saleService->count = 0;
+}
+
+// Додати новий житловий об'єкт
+void addProperty(SaleService* saleService, const char* address, int rooms, double price) {
+    // Збільшити розмір масиву властивостей
+    saleService->properties = realloc(saleService->properties, (saleService->count + 1) * sizeof(Property));
+
+    // Додати нову властивість
+    Property property;
+    strcpy(property.address, address);
+    property.rooms = rooms;
+    property.price = price;
+
+    saleService->properties[saleService->count++] = property;
+}
+
+// Вивести список доступних властивостей
+void printProperties(SaleService* saleService) {
+    printf("Список доступних властивостей:\n");
+    for (int i = 0; i < saleService->count; i++) {
+        printf("Адреса: %s, Кімнати: %d, Ціна: %.2lf\n",
+               saleService->properties[i].address,
+               saleService->properties[i].rooms,
+               saleService->properties[i].price);
+    }
+}
+
+int main() {
+    SaleService saleService;
+    initSaleService(&saleService);
+
+    // Додати декілька прикладових властивостей
+    addProperty(&saleService, "Адреса 1", 2, 100000.0);
+    addProperty(&saleService, "Адреса 2", 3, 150000.0);
+    addProperty(&saleService, "Адреса 3", 1, 80000.0);
+    addProperty(&saleService, "Адреса 4", 4, 200000.0);
+
+    // Вивести список доступних властивостей
+    printProperties(&saleService);
+
+    // Звільнити пам'ять, виділену для масиву властивостей
+    free(saleService.properties);
+
+    return 0;
+}
