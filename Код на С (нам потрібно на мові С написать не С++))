@@ -1,65 +1,100 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-// Структура, що представляє житловий об'єкт
-typedef struct {
-    char address[100];
-    int rooms;
-    double price;
-} Property;
+#define MAX_HOUSES 10
 
-// Клас, що представляє сервіс оренди житла
 typedef struct {
-    Property properties[100];
-    int count;
-} RentalService;
+    char street[50];
+    int houseNumber;
+    int apartmentNumber;
+    float price;
+} House;
 
-// Додати новий житловий об'єкт
-void addProperty(RentalService* rentalService, Property property) {
-    rentalService->properties[rentalService->count] = property;
-    rentalService->count++;
+House houses[MAX_HOUSES];
+int houseCount = 0;
+
+void addData() {
+    if (houseCount == MAX_HOUSES) {
+        printf("Ви не можете додати більше даних\n");
+        return;
+    }
+
+    printf("Введіть вулицю: ");
+    scanf("%s", houses[houseCount].street);
+    printf("Введіть номер будинку: ");
+    scanf("%d", &houses[houseCount].houseNumber);
+    printf("Введіть номер квартири: ");
+    scanf("%d", &houses[houseCount].apartmentNumber);
+    printf("Введіть ціну: ");
+    scanf("%f", &houses[houseCount].price);
+
+    houseCount++;
 }
 
-// Пошук житла за адресою та кількістю кімнат
-Property* searchProperty(RentalService* rentalService, const char* address, int rooms, int* resultsCount) {
-    Property* results = malloc(rentalService->count * sizeof(Property));
-    *resultsCount = 0;
+void deleteData() {
+    int i;
+    char street[50];
+    int houseNumber;
+    int apartmentNumber;
+printf("Введіть вулицю: ");
+    scanf("%s", street);
+    printf("Введіть номер будинку: ");
+    scanf("%d", &houseNumber);
+    printf("Введіть номер квартири: ");
+    scanf("%d", &apartmentNumber);
 
-    for (int i = 0; i < rentalService->count; i++) {
-        Property property = rentalService->properties[i];
-        if (strcmp(property.address, address) == 0 && property.rooms >= rooms) {
-            results[*resultsCount] = property;
-            (*resultsCount)++;
+    for (i = 0; i < houseCount; i++) {
+        if (strcmp(houses[i].street, street) == 0 &&
+            houses[i].houseNumber == houseNumber &&
+            houses[i].apartmentNumber == apartmentNumber) {
+            for (; i < houseCount - 1; i++) {
+                houses[i] = houses[i + 1];
+            }
+            houseCount--;
+            return;
         }
     }
 
-    return results;
+    printf("Дані не знайдено\n");
+}
+
+void viewData() {
+    int i;
+    for (i = 0; i < houseCount; i++) {
+        printf("Вулиця: %s, номер будинку: %d, номер квартири: %d, ціна: %.2f\n",
+               houses[i].street, houses[i].houseNumber, houses[i].apartmentNumber, houses[i].price);
+    }
 }
 
 int main() {
-    RentalService rentalService;
-    rentalService.count = 0;
+    int choice;
 
-    // Додати декілька прикладових житлових об'єктів
-    addProperty(&rentalService, (Property){"Адреса 1", 2, 1000.0});
-    addProperty(&rentalService, (Property){"Адреса 2", 3, 1500.0});
-    addProperty(&rentalService, (Property){"Адреса 3", 1, 800.0});
-    addProperty(&rentalService, (Property){"Адреса 4", 4, 2000.0});
+    while(1) {
+        printf("\n----------- Меню -----------\n");
+        printf("1. Додати дані\n");
+        printf("2. Видалити дані\n");
+        printf("3. Переглянути дані\n");
+        printf("4. Вийти\n");
+        printf("------------------------------\n");
+        printf("Введіть ваш вибір: ");
+        scanf("%d", &choice);
 
-    // Пошук житла за адресою та кількістю кімнат
-    int searchResultsCount;
-    Property* searchResults = searchProperty(&rentalService, "Адреса 2", 3, &searchResultsCount);
-
-    // Вивід результатів пошуку
-    if (searchResultsCount > 0) {
-        printf("Результати пошуку:\n");
-        for (int i = 0; i < searchResultsCount; i++) {
-            printf("Адреса: %s, Кімнати: %d, Ціна: %.2f\n", searchResults[i].address, searchResults[i].rooms, searchResults[i].price);
+        switch(choice) {
+            case 1:
+                addData();
+                break;
+            case 2:
+                deleteData();
+                break;
+            case 3:
+                viewData();
+                break;
+            case 4:
+                printf("Вихід з програми\n");
+                return 0;
+            default:
+                printf("Невірний вибір. Спробуйте ще раз\n");
         }
-        free(searchResults);
-    } else {
-        printf("Немає результатів пошуку.\n");
     }
 
     return 0;
