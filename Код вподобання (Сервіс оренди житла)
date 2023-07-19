@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Структура, що представляє житловий об'єкт
+typedef struct {
+    char address[100];
+    int rooms;
+    double price;
+} Property;
+
+// Функція для здійснення вподобання
+void likeProperty(const Property* property) {
+    printf("Ви вподобали житловий об'єкт за адресою: %s\n", property->address);
+    printf("Кількість кімнат: %d\n", property->rooms);
+    printf("Ціна: %.2f\n", property->price);
+    // Виконати додаткові дії, пов'язані з вподобанням житлового об'єкту
+    // Наприклад, збереження вподобання до профілю користувача, оновлення рейтингу, тощо.
+}
+
+int main() {
+    // Приклад створення житлового об'єкту
+    Property property;
+    strcpy(property.address, "Адреса 1");
+    property.rooms = 2;
+    property.price = 1000.0;
+
+    // Виклик функції вподобання
+    likeProperty(&property);
+
+    return 0;
+}
