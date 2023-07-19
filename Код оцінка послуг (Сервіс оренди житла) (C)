@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_PROPERTIES 100
+
+// Структура, що представляє житловий об'єкт
+struct Property {
+    char address[100];
+    int rooms;
+    double price;
+    int rating;
+};
+
+// Функція для оцінки житлового об'єкта
+void rateProperty(struct Property* property, int rating) {
+    property->rating = rating;
+}
+
+// Функція для розрахунку середньої оцінки
+double calculateAverageRating(const struct Property* properties, int numProperties) {
+    double sum = 0.0;
+    for (int i = 0; i < numProperties; i++) {
+        sum += properties[i].rating;
+    }
+    return sum / numProperties;
+}
+
+int main() {
+    struct Property properties[MAX_PROPERTIES];
+    int numProperties = 0;
+
+    // Додати прикладові житлові об'єкти
+    struct Property property1 = {"Адреса 1", 2, 1000.0, 0};
+    struct Property property2 = {"Адреса 2", 3, 1500.0, 0};
+    struct Property property3 = {"Адреса 3", 1, 800.0, 0};
+
+    properties[numProperties++] = property1;
+    properties[numProperties++] = property2;
+    properties[numProperties++] = property3;
+
+    // Оцінити житлові об'єкти
+    rateProperty(&property1, 4);
+    rateProperty(&property2, 5);
+    rateProperty(&property3, 3);
+
+    // Розрахувати середню оцінку
+    double averageRating = calculateAverageRating(properties, numProperties);
+
+    printf("Середня оцінка: %.2f\n", averageRating);
+
+    return 0;
+}
