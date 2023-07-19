@@ -1,0 +1,78 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Структура, що представляє житловий об'єкт
+typedef struct {
+    char address[100];
+    int rooms;
+    double price;
+} Property;
+
+// Структура, що представляє історію замовлень
+typedef struct {
+    Property property;
+    char customerName[100];
+} OrderHistory;
+
+// Функція для замовлення житлового об'єкта
+void placeOrder(OrderHistory* history, int* orderCount, const Property* property, const char* customerName) {
+    // Збереження інформації про замовлення в історію
+    history[*orderCount].property = *property;
+    strcpy(history[*orderCount].customerName, customerName);
+    (*orderCount)++;
+
+    // Логіка замовлення
+    printf("Ви замовили житловий об'єкт з такими характеристиками:\n");
+    printf("Адреса: %s\n", property->address);
+    printf("Кімнати: %d\n", property->rooms);
+    printf("Ціна: %.2f\n", property->price);
+    printf("Замовлення від: %s\n", customerName);
+    printf("Дякуємо за ваше замовлення!\n");
+}
+
+// Функція для виведення історії замовлень
+void printOrderHistory(const OrderHistory* history, int orderCount) {
+    printf("Історія замовлень:\n");
+    for (int i = 0; i < orderCount; i++) {
+        printf("Замовлення #%d\n", i + 1);
+        printf("Адреса: %s\n", history[i].property.address);
+        printf("Кімнати: %d\n", history[i].property.rooms);
+        printf("Ціна: %.2f\n", history[i].property.price);
+        printf("Замовлення від: %s\n", history[i].customerName);
+        printf("--------------------------\n");
+    }
+}
+
+int main() {
+    // Максимальна кількість замовлень
+    const int MAX_ORDERS = 100;
+
+    // Масив для зберігання історії замовлень
+    OrderHistory orderHistory[MAX_ORDERS];
+
+    // Кількість замовлень
+    int orderCount = 0;
+
+    // Приклад створення житлового об'єкта
+    Property property1;
+    strcpy(property1.address, "Адреса 1");
+    property1.rooms = 2;
+    property1.price = 1000.0;
+
+    // Замовлення житлового об'єкта
+    placeOrder(orderHistory, &orderCount, &property1, "Іванов");
+
+    // Ще один приклад замовлення
+    Property property2;
+    strcpy(property2.address, "Адреса 2");
+    property2.rooms = 3;
+    property2.price = 1500.0;
+
+    // Замовлення житлового об'єкта
+    placeOrder(orderHistory, &orderCount, &property2, "Петров");
+
+    // Виведення історії замовлень
+    printOrderHistory(orderHistory, orderCount);
+
+    return 0;
+}
